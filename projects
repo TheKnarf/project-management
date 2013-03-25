@@ -1,0 +1,61 @@
+#!/bin/bash
+#Author:		Frank Lyder Bredland
+#Date:			25. Mars 2013
+#Requirments:	MinGW, SQLite3
+#SQL:			CREATE TABLE projects (name varchar(64) NOT NULL, path varchar(128) NULL, PRIMARY KEY(name));
+#~/.bashrc:		alias p=". projects"
+#~/.bashrc:		projects
+
+# CONFIG
+db="$HOME/projects.db"
+sql="sqlite3.exe $db"
+table=projects
+
+# AUTOCOMPLETION
+_projects()
+{
+	local cur prev opts
+    COMPREPLY=()
+	all=$(echo $($sql "select name from $table")|tr '\n' ' ')
+	cur=$($sql "select name from $table where name like '$2%' limit 1")
+	COMPREPLY=( $(compgen -W '$all' -- ${cur}) )
+	return 0;
+}
+
+complete -F _projects projects
+complete -F _projects p
+
+# THE SCRIPT
+if [ "$#" = "0" ]; then
+	$sql "select CASE WHEN path = '$PWD' THEN '- ' || name ELSE '  ' || name END FROM $table"
+	
+else
+	if [ "$#" = "1" ]; then
+
+		count=$($sql "select count(*) from $table where name = '$*'")
+		if [ "$count" = "1" ]; then
+			tmp=$($sql "select path from $table where name = '$*'")
+			cd $tmp
+		else
+			echo "to many/few results:"
+			$sql "select name from $table"
+		fi
+	else
+		if [ "$#" = "2" ]; then
+			if [ "$1" = "-a" ]; then
+				echo "add new project: $2"
+				$sql "INSERT INTO $table VALUES ('$2', '$PWD');"
+			fi
+			
+			if [ "$1" = "-d" ]; then
+				$sql "DELETE FROM $table WHERE name='$2'"
+			fi
+			
+			$sql "select CASE WHEN path = '$PWD' THEN '- ' || name ELSE '  ' || name END FROM $table"
+		else
+			echo "more than two argument"
+		fi
+	fi
+fi
+
+
