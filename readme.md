@@ -17,3 +17,6 @@ Usage:
  
    _deletes refrence to project somename from the database_
    
+ - projects -setup
+ 
+  _setup the database, to reinstall; delete database and setup anew_
