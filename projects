@@ -1,8 +1,7 @@
 #!/bin/bash
 #Author:		Frank Lyder Bredland
-#Date:			25. Mars 2013
+#Date:			27. Mars 2013
 #Requirments:	MinGW, SQLite3
-#SQL:			CREATE TABLE projects (name varchar(64) NOT NULL, path varchar(128) NULL, PRIMARY KEY(name));
 #~/.bashrc:		alias p=". projects"
 #~/.bashrc:		projects
 
@@ -32,13 +31,17 @@ if [ "$#" = "0" ]; then
 else
 	if [ "$#" = "1" ]; then
 
-		count=$($sql "select count(*) from $table where name = '$*'")
-		if [ "$count" = "1" ]; then
-			tmp=$($sql "select path from $table where name = '$*'")
-			cd $tmp
+		if [ "$1" = "-setup" ]; then
+			$sql "CREATE TABLE projects (name varchar(64) NOT NULL, path varchar(128) NULL, PRIMARY KEY(name));"
 		else
-			echo "to many/few results:"
-			$sql "select name from $table"
+			count=$($sql "select count(*) from $table where name = '$*'")
+			if [ "$count" = "1" ]; then
+				tmp=$($sql "select path from $table where name = '$*'")
+				cd $tmp
+			else
+				echo "to many/few results:"
+				$sql "select name from $table"
+			fi
 		fi
 	else
 		if [ "$#" = "2" ]; then
