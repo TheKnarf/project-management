@@ -16,7 +16,9 @@ _projects()
 	local cur prev opts
     COMPREPLY=()
 	all=$(echo $($sql "select name from $table")|tr '\n' ' ')
-	cur=$($sql "select name from $table where name like '$2%' limit 1")
+	if [ "$COMP_CWORD" = "1" ]; then
+		cur=$($sql "select name from $table where name like '$2%' limit 1")
+	fi
 	COMPREPLY=( $(compgen -W '$all' -- ${cur}) )
 	return 0;
 }
