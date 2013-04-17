@@ -50,13 +50,20 @@ else
 			if [ "$1" = "-a" ]; then
 				echo "add new project: $2"
 				$sql "INSERT INTO $table VALUES ('$2', '$PWD');"
+				$sql "select CASE WHEN path = '$PWD' THEN '- ' || name ELSE '  ' || name END FROM $table"
 			fi
 			
 			if [ "$1" = "-d" ]; then
 				$sql "DELETE FROM $table WHERE name='$2'"
+				$sql "select CASE WHEN path = '$PWD' THEN '- ' || name ELSE '  ' || name END FROM $table"
 			fi
 			
-			$sql "select CASE WHEN path = '$PWD' THEN '- ' || name ELSE '  ' || name END FROM $table"
+			if [ "$1" = "-i" ]; then
+				DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+				cp -Rv $DIR/init/$2/*.* $PWD/
+			fi
+			
+			
 		else
 			echo "more than two argument"
 		fi

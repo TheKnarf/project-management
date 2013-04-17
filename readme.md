@@ -2,7 +2,7 @@
 
 An easy command line projectmanagement, basically works as alias for sql commands.
 
-Usage:
+##Usage
 
  - projects
  
@@ -20,3 +20,7 @@ Usage:
  - projects -setup
  
   _setup the database, to reinstall; delete database and setup anew_
+  
+ - projects -i readme
+ 
+ _initialize the project with some readme files_
